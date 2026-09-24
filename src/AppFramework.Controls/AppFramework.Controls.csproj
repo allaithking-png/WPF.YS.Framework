@@ -1,9 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <RootNamespace>AppFramework.Controls</RootNamespace>
+    <AssemblyName>AppFramework.Controls</AssemblyName>
+    <Description>Custom controls, attached properties, and WPF themes.</Description>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AppFramework.Abstractions\AppFramework.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>
