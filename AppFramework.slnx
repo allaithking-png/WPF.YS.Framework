@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/AppFramework.Abstractions/AppFramework.Abstractions.csproj" />
+  <Project Path="src/AppFramework.Controls/AppFramework.Controls.csproj" />
+  <Project Path="src/AppFramework.Core/AppFramework.Core.csproj" />
+  <Project Path="src/AppFramework.Data/AppFramework.Data.csproj" />
+  <Project Path="src/AppFramework.Hosting/AppFramework.Hosting.csproj" />
+  <Project Path="src/AppFramework.Sync/AppFramework.Sync.csproj" />
+</Solution>
