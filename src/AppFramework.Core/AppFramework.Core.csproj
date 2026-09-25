@@ -3,7 +3,9 @@
   <PropertyGroup>
     <RootNamespace>AppFramework.Core</RootNamespace>
     <AssemblyName>AppFramework.Core</AssemblyName>
-    <Description>Core implementation: DI, MenuManager, NavigationService, OperationBus.</Description>
+    <Description>Core implementation: Base classes, MenuManager, NavigationService, OperationBus.</Description>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
