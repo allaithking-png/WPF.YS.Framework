@@ -19,8 +19,8 @@ public sealed class MenuItemDescriptor
     /// <summary>مفتاح الأمر (يُحلّ عبر IMenuManager).</summary>
     public string? CommandKey { get; set; }
 
-    ///// <summary>الأمر المباشر (بديل عن CommandKey).</summary>
-    //public System.Windows.Input.ICommand? Command { get; set; }
+    /// <summary>الأمر المباشر (بديل عن CommandKey).</summary>
+    public System.Windows.Input.ICommand? Command { get; set; }
 
     /// <summary>بارامتر الأمر.</summary>
     public object? CommandParameter { get; set; }
