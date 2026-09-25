@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using AppFramework.Abstractions.Services;
+using AppFramework.Core.Navigation;
 using AppFramework.Core.Scanning;
 using AppFramework.Core.Services;
 
@@ -14,17 +15,24 @@ namespace AppFramework.Core.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// تسجيل الخدمات الأساسية للإطار (OperationBus, MenuManager, AssemblyScanner).
+    /// تسجيل الخدمات الأساسية للإطار
+    /// (OperationBus, MenuManager, Navigation, Session, Scanner).
     /// </summary>
     public static IServiceCollection AddAppFrameworkCore(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // الخدمات الأساسية كـ Singleton
+        // === Core Services ===
         services.AddSingleton<IOperationBus, OperationBus>();
         services.AddSingleton<IMenuManager, MenuManager>();
 
-        // Scanner (يُستخدم عند الإقلاع — لا نُسجّله كـ Singleton لتفادي مشاكل دورة الحياة)
+        // === Navigation ===
+        services.AddSingleton<ScreenRegistry>();
+        services.AddSingleton<IScreenViewResolver, WpfScreenViewResolver>();
+        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<INavigationSessionService, JsonNavigationSessionService>();
+
+        // === Scanning ===
         services.AddTransient<AssemblyScanner>();
 
         return services;
@@ -41,13 +49,27 @@ public static class ServiceCollectionExtensions
 
         if (assembliesToScan is { Length: > 0 })
         {
-            // أنشئ Scanner مؤقتًا للتسجيل
+            // بنية مؤقتة لاستخراج LoggerFactory للتسجيل
             var provider = services.BuildServiceProvider();
-            var logger = provider.GetService<ILogger<AssemblyScanner>>();
+            var loggerFactory = provider.GetService<ILoggerFactory>();
+            var logger = loggerFactory?.CreateLogger<AssemblyScanner>();
+
             var scanner = new AssemblyScanner(services, logger);
-            scanner.Scan(assembliesToScan);
+            var result = scanner.Scan(assembliesToScan);
+
+            // سجّل الشاشات المكتشفة في ScreenRegistry
+            RegisterScreensFromServices(services, result);
         }
 
         return services;
+    }
+
+    private static void RegisterScreensFromServices(IServiceCollection services, RegistrationResult result)
+    {
+        // ScreenRegistration تمت إضافتها كـ Singleton من قِبل AssemblyScanner
+        // نحتاج فقط لتعريف ScreenRegistry ليقرأ منها.
+        // (يتم تلقائيًا عبر DI عند أول طلب)
+        _ = services;   // لا شيء إضافي
+        _ = result;
     }
 }
