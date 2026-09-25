@@ -12,6 +12,11 @@ public sealed class MenuItemDescriptor
 
     /// <summary>النص المعروض.</summary>
     public string Title { get; set; } = "";
+    
+
+/// <summary>وصف مختصر (يُستخدم في Tooltip مثلًا).</summary>   // ← جديد
+public string? Description { get; set; }                       // ← جديد
+
 
     /// <summary>اسم الأيقونة.</summary>
     public string? Icon { get; set; }
