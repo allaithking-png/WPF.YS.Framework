@@ -4,6 +4,8 @@
     <RootNamespace>AppFramework.Hosting</RootNamespace>
     <AssemblyName>AppFramework.Hosting</AssemblyName>
     <Description>Integration with Generic Host: AppHostBuilder, AssemblyScanner.</Description>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
