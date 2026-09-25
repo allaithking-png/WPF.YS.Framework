@@ -4,13 +4,16 @@
     <RootNamespace>AppFramework.Data</RootNamespace>
     <AssemblyName>AppFramework.Data</AssemblyName>
     <Description>Data layer: IDataSource, SQLite, Offline-first.</Description>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+  
   </ItemGroup>
 
   <ItemGroup>

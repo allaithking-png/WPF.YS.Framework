@@ -4,6 +4,8 @@
     <RootNamespace>AppFramework.Sync</RootNamespace>
     <AssemblyName>AppFramework.Sync</AssemblyName>
     <Description>Sync engine: Outbox, SyncService, BackgroundService.</Description>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

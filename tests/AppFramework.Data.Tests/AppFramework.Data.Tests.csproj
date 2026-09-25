@@ -8,16 +8,17 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="Moq" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="coverlet.collector" />
-  </ItemGroup>
-
+  
+<ItemGroup>
+  <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  <PackageReference Include="xunit" />
+  <PackageReference Include="xunit.runner.visualstudio" />
+  <PackageReference Include="FluentAssertions" />
+  <PackageReference Include="Moq" />
+  <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  <PackageReference Include="Microsoft.Extensions.Logging" />
+  <PackageReference Include="coverlet.collector" />
+</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AppFramework.Data\AppFramework.Data.csproj" />
   </ItemGroup>
