@@ -1,0 +1,44 @@
+<UserControl x:Class="SalesApp.Wpf.Views.OrdersGridView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- شريط الأدوات -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Command="{Binding RefreshCommand}" Content="🔄 تحديث" Margin="0,0,6,0"/>
+            <Button Command="{Binding AddOrderCommand}" Content="➕ طلب جديد" Margin="0,0,6,0"/>
+            <Button Command="{Binding ShowKanbanCommand}" Content="📋 كانبان"/>
+        </StackPanel>
+
+        <!-- الجدول -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Items}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Extended"
+                  AlternatingRowBackground="{DynamicResource App.SurfaceBrush}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="المعرّف" Binding="{Binding Key}" Width="120"/>
+                <DataGridTextColumn Header="العميل" Binding="{Binding CustomerName}" Width="*"/>
+                <DataGridTextColumn Header="المبلغ" Binding="{Binding Amount, StringFormat={}{0:N2}}" Width="120"/>
+                <DataGridTextColumn Header="الحالة" Binding="{Binding Status}" Width="120"/>
+                <DataGridTextColumn Header="التاريخ" Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- الحالة -->
+        <TextBlock Grid.Row="2" Text="{Binding StatusMessage}"
+                   Margin="0,6,0,0"
+                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+    </Grid>
+</UserControl>

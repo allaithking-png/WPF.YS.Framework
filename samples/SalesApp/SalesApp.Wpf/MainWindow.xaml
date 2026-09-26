@@ -1,0 +1,42 @@
+<Window x:Class="SalesApp.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:menus="clr-namespace:AppFramework.Controls.Menus;assembly=AppFramework.Controls"
+        Title="{Binding Title}"
+        Width="1100" Height="700"
+        WindowStartupLocation="CenterScreen">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- القائمة العلوية -->
+    <menus:MenuHostControl x:Name="PART_MenuHost"
+                               Grid.Row="0"
+                               PreferredHost="MenuBar"
+                               HorizontalAlignment="Stretch"/>
+
+    <!-- المحتوى الرئيسي -->
+    <ContentControl Grid.Row="1" x:Name="PART_MainContent" Margin="8"/>
+
+    <!-- شريط الحالة -->
+    <Border Grid.Row="2" 
+                Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="12,6">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="الإطار: WPF.YS.Framework 1.0.0-alpha.1" 
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           Margin="0,0,20,0"/>
+        <TextBlock Text="{Binding ActiveScreenId, StringFormat='الشاشة: {0}'}"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           Margin="0,0,20,0"/>
+        <TextBlock Text="{Binding CurrentTheme, StringFormat='الثيم: {0}'}"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

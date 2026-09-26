@@ -102,12 +102,13 @@ public sealed class NavigationService : INavigationService
             await dataAware.LoadInitialAsync();
         }
 
-        // 7) حل الـ View
+        // 7) حل الـ View (اختياري — ViewTemplateHost قد يتولّى ذلك)
         var view = _viewResolver.ResolveView(viewModel);
         if (view is null)
         {
-            _logger.LogError("No View resolved for ViewModel {Type}", viewModel.GetType().Name);
-            return NavigationResult.Fail($"No View resolved for screen '{screenId}'.", screenId);
+            // لا نُسقط — ViewTemplateHost سيعرض الـ View لاحقًا
+            _logger.LogDebug("No direct View resolved for {Type}; will rely on ViewTemplateHost.",
+                viewModel.GetType().Name);
         }
 
         // 8) تخزين الحالة
@@ -292,6 +293,6 @@ public sealed record OpenScreen(
     string ScreenId,
     string InstanceKey,
     object ViewModel,
-    object View,
+    object? View,                   // ← nullable
     NavigationContext Context,
     ScreenRegistration Registration);

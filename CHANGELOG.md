@@ -5,31 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0-alpha.1] - 2026-09-26
 
 ### Added
 
+#### PR-10 — Hosting + Sample App
+- `AppHostBuilder` — unified builder for all services
+- `AppHost` — start/stop application lifecycle
+- `ViewTemplateScanner` — auto-register `[ViewTemplate]`
+- `SalesApp.Wpf` sample with Orders + Products screens
+- Grid + Kanban views for Orders
+- Theme switcher in runtime
+- Complete README + Getting Started guide
+
+#### PR-09 — Custom Controls + Themes
+- `IconProperties` (Icon, Position, IconSize)
+- `LoadingProperties` (IsLoading, LoadingText)
+- `ValidationProperties` (IsValid, ErrorMessage, ErrorBrush)
+- `IThemeService` + `ThemeManager`
+- 3 themes: Light, Dark, Corporate
+- `Controls.xaml` with styles for all major controls
+
+#### PR-08 — View Templates Registry + Host
+- `ViewTemplateRegistry` — per-ViewModel view templates
+- `ViewTemplateHost` — runtime mode switching
+- `JsonViewModePersistence` — per-user preferences
+- Generic views: Grid, List, Card
+
+#### PR-07 — Sync Engine
+- `SyncService` — Outbox push + remote pull
+- `NetworkConnectivityMonitor` — network change detection
+- `SyncBackgroundService` — IHostedService worker
+- Auto-sync on connectivity restored
+
+#### PR-06 — Data Remote
+- `DataService` — Offline-first orchestration
+- `HttpDataSource` — REST example
+- Write-Behind pattern (Outbox + async push)
+- Pub/Sub per source
+
+#### PR-05 — Data Layer (Local)
+- `LocalDbContext` + EF Core + SQLite
+- `SqliteLocalStore` — ILocalStore implementation
+- Outbox pattern for sync
+- JSON payload storage
+
+#### PR-04 — Menu Providers
+- `IMenuProvider` + MenuBar/Toolbar/Ribbon providers
+- `MenuHostControl` — smart UserControl
+- `MenuViewService` helper
+
+#### PR-03 — Navigation Service
+- `NavigationService` — full INavigationService
+- `ScreenRegistry` — auto-populated
+- `WpfScreenViewResolver` — convention-based
+- `JsonNavigationSessionService` — session persistence
+
+#### PR-02 — Core Foundation
+- Base classes (BaseViewModel, BaseScreen, etc.)
+- `MenuManager` — full implementation
+- `OperationBus` — Before/Started/Completed events
+- `AssemblyScanner` — attribute-based discovery
+
 #### PR-01 — Abstractions Layer
-- **Contracts** (10): IAppAware, IScreenAware, IDataAware, IDataItemAware, IMenuAware, IViewModeAware, IOperationAware, IReportAware, INavigationAware, IAuthorizable
-- **Models — Data** (6): DataRequest, DataLoadStrategy, PagedResult, ItemKey, DataChange, DataChangeKind
-- **Models — Navigation** (2): NavigationContext, NavigationResult
-- **Models — Menu** (4): MenuDefinition, MenuContext, MenuHost, MenuItemDescriptor
-- **Models — Operations** (2): OperationContext, OperationResult
-- **Models — ViewTemplates** (3): ViewMode, ViewModeCategory, ViewTemplateDescriptor
-- **Models — Screens** (2): ScreenViewMode, ScreenRegistration
-- **Models — Reports** (3): ReportRequest, ReportResult, ReportExportFormat
-- **Services** (11): IDataService, IDataSource, INavigationService, IMenuManager, IOperationBus, IReportService, IViewTemplateRegistry, IViewTemplateHost, INotificationService, ISyncService, IUserContext
-- **Attributes** (5): ScreenAttribute, DataSourceAttribute, ViewTemplateAttribute, PersistAttribute, AuthorizeAttribute
+- 10 contracts (IAppAware, IScreenAware, etc.)
+- 22 models (Data, Navigation, Menu, Operations, ViewTemplates, Screens, Reports)
+- 11 service interfaces
+- 5 attributes
 
 #### PR-00 — Repository Scaffold
-- Initial solution structure (AppFramework.slnx)
-- 6 source projects + 3 test projects
-- Unified build settings (Directory.Build.props, Directory.Packages.props)
-- .editorconfig + .gitignore
-- CI workflow (GitHub Actions)
-- PR template
-- MIT license
-- README + CHANGELOG
+- Solution structure
+- Build settings (Directory.Build.props, Directory.Packages.props)
+- CI workflow
+- Documentation
 
 ---
 

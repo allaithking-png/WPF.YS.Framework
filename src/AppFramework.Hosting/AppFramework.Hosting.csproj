@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +20,11 @@
     <ProjectReference Include="..\AppFramework.Core\AppFramework.Core.csproj" />
     <ProjectReference Include="..\AppFramework.Data\AppFramework.Data.csproj" />
     <ProjectReference Include="..\AppFramework.Sync\AppFramework.Sync.csproj" />
+    <ProjectReference Include="..\AppFramework.Controls\AppFramework.Controls.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scanning\" />
   </ItemGroup>
 
 </Project>
