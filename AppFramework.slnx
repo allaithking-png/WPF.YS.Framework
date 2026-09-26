@@ -3,6 +3,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/AppFramework.Core.Tests/AppFramework.Core.Tests.csproj" />
     <Project Path="tests/AppFramework.Data.Tests/AppFramework.Data.Tests.csproj" />
+    <Project Path="tests/AppFramework.Sync.Tests/AppFramework.Sync.Tests.csproj" />
   </Folder>
   <Project Path="src/AppFramework.Abstractions/AppFramework.Abstractions.csproj" />
   <Project Path="src/AppFramework.Controls/AppFramework.Controls.csproj" />
