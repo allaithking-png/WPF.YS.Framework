@@ -7,8 +7,15 @@
              d:DesignHeight="500" d:DesignWidth="900">
   <Grid>
     <Grid.RowDefinitions>
+      <!-- 0: Toolbar -->
       <RowDefinition Height="Auto"/>
+      <!-- 1: Search -->
+      <RowDefinition Height="Auto"/>
+      <!-- 2: Content -->
       <RowDefinition Height="*"/>
+      <!-- 3: Pagination -->
+      <RowDefinition Height="Auto"/>
+      <!-- 4: Status -->
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
@@ -46,12 +53,120 @@
         <ContentControl x:Name="PART_ReportsHost" VerticalAlignment="Center"/>
       </StackPanel>
     </Border>
+    <!-- شريط البحث -->
+    <Border Grid.Row="1"
+        Background="{DynamicResource App.SurfaceBrush}"
+        BorderBrush="{DynamicResource App.BorderBrush}"
+        BorderThickness="0,0,0,1"
+        Padding="10,6">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
+        <TextBlock Grid.Column="0"
+                   Text="🔍"
+                   FontSize="16"
+                   Margin="0,0,8,0"
+                   VerticalAlignment="Center"/>
+
+        <TextBox x:Name="PART_SearchBox"
+                 Grid.Column="1"
+                 MinHeight="28"
+                 Padding="8,4"
+                 VerticalContentAlignment="Center"/>
+
+        <Button x:Name="PART_ClearSearchButton"
+                Grid.Column="2"
+                Content="✖"
+                Width="28" Height="28"
+                Padding="0"
+                MinWidth="0"
+                Margin="6,0,0,0"
+                Visibility="Collapsed"
+                ToolTip="مسح البحث"
+                Click="OnClearSearchClicked"/>
+      </Grid>
+    </Border>
     <!-- محتوى العرض -->
-    <ContentControl Grid.Row="1" x:Name="PART_ContentHost" Margin="8"/>
+    <ContentControl Grid.Row="2" x:Name="PART_ContentHost" Margin="8"/>
+    <!-- شريط Pagination -->
+    <Border Grid.Row="3"
+        Background="{DynamicResource App.SurfaceBrush}"
+        BorderBrush="{DynamicResource App.BorderBrush}"
+        BorderThickness="0,1,0,0"
+        Padding="10,6">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
+        <TextBlock Grid.Column="0"
+                   Text="{Binding PageStatus}"
+                   VerticalAlignment="Center"
+                   FontSize="11"
+                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+
+          <Button Content="⏮"
+                    Command="{Binding GoFirstPageCommand}"
+                    IsEnabled="{Binding CanGoPrevious}"
+                    Padding="10,4"
+                    MinWidth="36"
+                    Margin="0,0,4,0"
+                    ToolTip="الصفحة الأولى"/>
+
+          <Button Content="◀"
+                    Command="{Binding GoPreviousPageCommand}"
+                    IsEnabled="{Binding CanGoPrevious}"
+                    Padding="10,4"
+                    MinWidth="36"
+                    Margin="0,0,4,0"
+                    ToolTip="السابق"/>
+
+          <TextBlock Text="{Binding CurrentPage}"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Margin="8,0"
+                       FontSize="13"/>
+
+          <TextBlock Text="من"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Margin="0,0,8,0"
+                       FontSize="11"/>
+
+          <TextBlock Text="{Binding TotalPages}"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Margin="0,0,8,0"
+                       FontSize="13"/>
+
+          <Button Content="▶"
+                    Command="{Binding GoNextPageCommand}"
+                    IsEnabled="{Binding CanGoNext}"
+                    Padding="10,4"
+                    MinWidth="36"
+                    Margin="0,0,4,0"
+                    ToolTip="التالي"/>
+
+          <Button Content="⏭"
+                    Command="{Binding GoLastPageCommand}"
+                    IsEnabled="{Binding CanGoNext}"
+                    Padding="10,4"
+                    MinWidth="36"
+                    ToolTip="الصفحة الأخيرة"/>
+        </StackPanel>
+      </Grid>
+    </Border>
     <!-- شريط الحالة -->
-    <Border Grid.Row="2"
+    <Border Grid.Row="4"
                 Background="{DynamicResource App.SurfaceBrush}"
                 BorderBrush="{DynamicResource App.BorderBrush}"
                 BorderThickness="0,1,0,0"

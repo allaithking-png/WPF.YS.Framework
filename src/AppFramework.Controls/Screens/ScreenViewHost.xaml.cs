@@ -91,14 +91,33 @@ public partial class ScreenViewHost : UserControl
             _currentModeAware = modeAware;
             modeAware.ModeChanged += OnModeAwareChanged;
         }
+        // ✅ اربط شريط البحث
+        var searchBinding = new Binding("SearchText")
+        {
+            Mode = BindingMode.TwoWay,
+            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+            Delay = 300   // debounce
+        };
+        PART_SearchBox.SetBinding(TextBox.TextProperty, searchBinding);
 
+        // أظهر زر المسح عند وجود نص
+        PART_SearchBox.TextChanged += (_, _) =>
+        {
+            PART_ClearSearchButton.Visibility = string.IsNullOrWhiteSpace(PART_SearchBox.Text)
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        };
         // Toolbar
         BuildToolbar(e.NewValue);
 
         // Content
         RenderContent();
     }
-
+    private void OnClearSearchClicked(object sender, RoutedEventArgs e)
+    {
+        PART_SearchBox.Text = "";
+        PART_ClearSearchButton.Visibility = Visibility.Collapsed;
+    }
     private void OnUnloaded(object sender, RoutedEventArgs e) => DetachModeAware();
 
     private void DetachModeAware()
@@ -246,7 +265,7 @@ public partial class ScreenViewHost : UserControl
             UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
         };
         dataGrid.SetBinding(DataGrid.SelectedItemProperty, selectedBinding);
-        dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding("Items"));
+        dataGrid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding("FilteredItems"));
 
         var itemsProp = DataContext.GetType().GetProperty("Items");
         if (itemsProp?.GetValue(DataContext) is System.Collections.IEnumerable enumerable)
