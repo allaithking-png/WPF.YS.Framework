@@ -20,4 +20,8 @@
     <ProjectReference Include="..\AppFramework.Abstractions\AppFramework.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewTemplates\GenericViews\" />
+  </ItemGroup>
+
 </Project>
