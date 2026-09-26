@@ -40,10 +40,12 @@ public partial class App : Application
                 // Screens
                 services.AddSingleton<ViewModels.OrdersViewModel>();
                 services.AddSingleton<ViewModels.ProductsViewModel>();
+                services.AddSingleton<ViewModels.CustomersViewModel>();   // ← جديد
 
                 // Data Sources
                 services.AddSingleton<Data.OrdersDataSource>();
                 services.AddSingleton<Data.ProductsDataSource>();
+                services.AddSingleton<Data.CustomersDataSource>();        // ← جديد
 
                 // ثبت مصادر البيانات في IDataService
                 services.AddSingleton<AppFramework.Abstractions.Services.IDataSource>(sp => sp.GetRequiredService<Data.OrdersDataSource>());

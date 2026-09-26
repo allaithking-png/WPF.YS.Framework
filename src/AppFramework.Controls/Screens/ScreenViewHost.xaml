@@ -1,0 +1,64 @@
+<UserControl x:Class="AppFramework.Controls.Screens.ScreenViewHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="900">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- شريط الأدوات الديناميكي -->
+    <Border x:Name="PART_ToolbarBorder"
+                Grid.Row="0"
+                Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="10,8">
+      <StackPanel Orientation="Horizontal" x:Name="PART_Toolbar">
+        <!-- العنوان -->
+        <TextBlock x:Name="PART_Title"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.PrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,20,0"/>
+
+        <!-- أزرار الأوامر -->
+        <ContentControl x:Name="PART_ActionsHost" VerticalAlignment="Center"/>
+
+        <!-- فاصل -->
+        <Separator Margin="10,0" Width="1"
+                           Background="{DynamicResource App.BorderBrush}"/>
+
+        <!-- أزرار طرق العرض -->
+        <ContentControl x:Name="PART_ViewModesHost" VerticalAlignment="Center"/>
+
+        <!-- فاصل -->
+        <Separator Margin="10,0" Width="1"
+                           Background="{DynamicResource App.BorderBrush}"/>
+
+        <!-- أزرار التقارير -->
+        <ContentControl x:Name="PART_ReportsHost" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Border>
+
+    <!-- محتوى العرض -->
+    <ContentControl Grid.Row="1" x:Name="PART_ContentHost" Margin="8"/>
+
+    <!-- شريط الحالة -->
+    <Border Grid.Row="2"
+                Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="10,4">
+      <TextBlock Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       FontSize="11"/>
+    </Border>
+  </Grid>
+</UserControl>

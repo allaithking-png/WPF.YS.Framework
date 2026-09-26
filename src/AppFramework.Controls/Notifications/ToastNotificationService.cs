@@ -60,20 +60,25 @@ public sealed class ToastNotificationService : INotificationService
 
     private void EnsureHost()
     {
-        if (_host is not null && _host.IsLoaded) return;
-
-        var dispatcher = Application.Current?.Dispatcher;
-        if (dispatcher is null)
+        var app = Application.Current;
+        if (app is null)
         {
             _logger.LogWarning("Application.Current is null — cannot show toast");
             return;
         }
 
-        dispatcher.Invoke(() =>
+        app.Dispatcher.Invoke(() =>
         {
-            _host ??= new ToastHost();
+            if (_host is null)
+            {
+                _host = new ToastHost();
+                _host.Closed += (_, _) => _host = null;  // ✅ أعد إنشاءه إن أُغلق
+            }
+
             if (!_host.IsVisible)
+            {
                 _host.Show();
+            }
         });
     }
 

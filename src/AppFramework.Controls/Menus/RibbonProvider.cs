@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using AppFramework.Abstractions.Models.Menu;
 
 namespace AppFramework.Controls.Menus;

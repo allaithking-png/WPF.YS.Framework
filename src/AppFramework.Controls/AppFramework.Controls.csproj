@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Attached\" />
+    <Folder Include="Screens\" />
     <Folder Include="Notifications\" />
     <Folder Include="Themes\Skins\" />
     <Folder Include="Theming\" />
