@@ -1,0 +1,45 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <sys:String x:Key="AppFramework.Theme">Dark</sys:String>
+
+    <!-- ============ Colors ============ -->
+    <Color x:Key="App.PrimaryColor">#64B5F6</Color>
+    <Color x:Key="App.PrimaryDarkColor">#42A5F5</Color>
+    <Color x:Key="App.SecondaryColor">#90A4AE</Color>
+    <Color x:Key="App.SuccessColor">#66BB6A</Color>
+    <Color x:Key="App.WarningColor">#FFCA28</Color>
+    <Color x:Key="App.ErrorColor">#EF5350</Color>
+
+    <Color x:Key="App.BackgroundColor">#1E1E1E</Color>
+    <Color x:Key="App.SurfaceColor">#252526</Color>
+    <Color x:Key="App.BorderColor">#3E3E42</Color>
+
+    <Color x:Key="App.TextPrimaryColor">#E0E0E0</Color>
+    <Color x:Key="App.TextSecondaryColor">#9E9E9E</Color>
+    <Color x:Key="App.TextInverseColor">#1E1E1E</Color>
+
+    <!-- ============ Brushes ============ -->
+    <SolidColorBrush x:Key="App.PrimaryBrush" Color="{StaticResource App.PrimaryColor}" />
+    <SolidColorBrush x:Key="App.PrimaryDarkBrush" Color="{StaticResource App.PrimaryDarkColor}" />
+    <SolidColorBrush x:Key="App.SecondaryBrush" Color="{StaticResource App.SecondaryColor}" />
+    <SolidColorBrush x:Key="App.SuccessBrush" Color="{StaticResource App.SuccessColor}" />
+    <SolidColorBrush x:Key="App.WarningBrush" Color="{StaticResource App.WarningColor}" />
+    <SolidColorBrush x:Key="App.ErrorBrush" Color="{StaticResource App.ErrorColor}" />
+
+    <SolidColorBrush x:Key="App.BackgroundBrush" Color="{StaticResource App.BackgroundColor}" />
+    <SolidColorBrush x:Key="App.SurfaceBrush" Color="{StaticResource App.SurfaceColor}" />
+    <SolidColorBrush x:Key="App.BorderBrush" Color="{StaticResource App.BorderColor}" />
+
+    <SolidColorBrush x:Key="App.TextPrimaryBrush" Color="{StaticResource App.TextPrimaryColor}" />
+    <SolidColorBrush x:Key="App.TextSecondaryBrush" Color="{StaticResource App.TextSecondaryColor}" />
+    <SolidColorBrush x:Key="App.TextInverseBrush" Color="{StaticResource App.TextInverseColor}" />
+
+    <!-- ============ Fonts ============ -->
+    <FontFamily x:Key="App.FontFamily">Segoe UI</FontFamily>
+    <sys:Double x:Key="App.FontSizeSmall">11</sys:Double>
+    <sys:Double x:Key="App.FontSizeNormal">13</sys:Double>
+    <sys:Double x:Key="App.FontSizeLarge">15</sys:Double>
+    <sys:Double x:Key="App.FontSizeTitle">20</sys:Double>
+</ResourceDictionary>
