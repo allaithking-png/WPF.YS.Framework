@@ -1,7 +1,9 @@
-using System;
-using Microsoft.Extensions.DependencyInjection;
+using AppFramework.Abstractions.Services;
 using AppFramework.Controls.Menus;
+using AppFramework.Controls.Notifications;
 using AppFramework.Controls.Theming;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace AppFramework.Controls.DependencyInjection;
 
@@ -31,6 +33,8 @@ public static class ControlsServiceCollectionExtensions
 
         // Theming                                                          // ← جديد
         services.AddSingleton<IThemeService, ThemeManager>();
+        // داخل AddAppFrameworkControls، بعد Theming:
+        services.AddSingleton<INotificationService, ToastNotificationService>();
 
         return services;
     }

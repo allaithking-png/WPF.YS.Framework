@@ -1,0 +1,18 @@
+<Window x:Class="AppFramework.Controls.Notifications.ToastHost"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        Topmost="True"
+        IsHitTestVisible="True"
+        ShowActivated="False"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize">
+    <StackPanel x:Name="PART_Container"
+                Margin="12"
+                VerticalAlignment="Top">
+        <!-- الإشعارات تُضاف هنا برمجيًا -->
+    </StackPanel>
+</Window>

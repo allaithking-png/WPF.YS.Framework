@@ -9,6 +9,7 @@ using AppFramework.Core.DependencyInjection;
 using AppFramework.Data.DependencyInjection;
 using AppFramework.Sync.DependencyInjection;
 using AppFramework.Sync.Services;
+using AppFramework.Data.Reports.DependencyInjection;
 
 namespace AppFramework.Hosting;
 
@@ -79,6 +80,9 @@ public sealed class AppHostBuilder
 
         // 2) Data (SQLite + Outbox + DataService)
         services.AddAppFrameworkData(_frameworkOptions.ConnectionString);
+
+        // Reports
+        services.AddAppFrameworkReports();
 
         // 3) Sync (Connectivity + SyncService + BackgroundService)
         services.AddAppFrameworkSync(syncOptions =>
