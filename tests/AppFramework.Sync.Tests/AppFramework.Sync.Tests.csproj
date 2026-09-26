@@ -14,15 +14,23 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AppFramework.Sync\AppFramework.Sync.csproj" />
+    <ProjectReference Include="..\..\src\AppFramework.Data\AppFramework.Data.csproj" />
+    <ProjectReference Include="..\AppFramework.Data.Tests\AppFramework.Data.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestHelpers\" />
   </ItemGroup>
 
 </Project>
