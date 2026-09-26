@@ -29,27 +29,32 @@ public partial class ToastHost : Window
     // ==========================================================
 
     public void ShowToast(
-        string title,
-        string message,
-        ToastSeverity severity,
-        TimeSpan? duration = null,
-        IReadOnlyList<NotificationAction>? actions = null,
-        Action<NotificationAction>? onActionInvoked = null)
+    string title,
+    string message,
+    ToastSeverity severity,
+    TimeSpan? duration = null,
+    IReadOnlyList<NotificationAction>? actions = null,
+    Action<NotificationAction>? onActionInvoked = null)
     {
+        // ✅ تأكد أن النافذة مرئية
+        if (!IsVisible)
+            Show();
+
+        // ✅ أعِد الظهور
+        BeginAnimation(OpacityProperty, null);
+        Opacity = 1;
+
         var toast = new ToastControl();
         toast.Configure(title, message, severity, actions, onActionInvoked);
 
         toast.Closed += (_, _) => RemoveToast(toast);
         toast.Opacity = 0;
-
         _activeToasts.Add(toast);
         PART_Container.Children.Insert(0, toast);
 
-        // Fade in
         var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(250));
         toast.BeginAnimation(OpacityProperty, fadeIn);
 
-        // Auto-dismiss
         var dismiss = duration ?? GetDefaultDuration(severity);
         if (dismiss > TimeSpan.Zero)
         {
@@ -62,8 +67,8 @@ public partial class ToastHost : Window
             timer.Start();
         }
 
-        // تحديث موضع الـ window
-        Dispatcher.InvokeAsync(UpdatePosition, DispatcherPriority.Loaded);
+        UpdateLayout();
+        UpdatePosition();
     }
 
     // ==========================================================
@@ -79,12 +84,12 @@ public partial class ToastHost : Window
         {
             _activeToasts.Remove(toast);
             PART_Container.Children.Remove(toast);
-            UpdatePosition();
 
             if (_activeToasts.Count == 0)
             {
-                // أخفِ النافذة (لا نُغلقها لتفادي مشاكل الـ Application)
-                Hide();
+                // ✅ أخفِ بـ Opacity بدل Hide
+                var winFade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+                BeginAnimation(OpacityProperty, winFade);
             }
         };
         toast.BeginAnimation(OpacityProperty, fadeOut);

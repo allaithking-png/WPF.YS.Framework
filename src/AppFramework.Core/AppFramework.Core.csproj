@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Screens\" />
     <Folder Include="ViewTemplates\GenericViews\" />
   </ItemGroup>
 

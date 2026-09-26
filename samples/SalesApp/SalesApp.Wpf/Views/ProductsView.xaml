@@ -3,28 +3,79 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="800">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
 
-        <DataGrid Grid.Row="0"
+    <!-- شريط الأدوات -->
+    <Border Grid.Row="0"
+                Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="8,6"
+                Margin="0,0,0,8">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="📦 المنتجات"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,16,0"
+                           Foreground="{DynamicResource App.PrimaryBrush}"/>
+
+        <Button Command="{Binding RefreshCommand}"
+                        Content="🔄 تحديث"
+                        Margin="0,0,6,0"
+                        ToolTip="إعادة تحميل القائمة"/>
+
+        <Separator Margin="6,0" Width="1" Background="{DynamicResource App.BorderBrush}"/>
+
+        <Button Command="{Binding ExportCsvCommand}"
+                        Content="📄 CSV"
+                        Margin="0,0,6,0"
+                        ToolTip="تصدير إلى CSV"/>
+
+        <Button Command="{Binding ExportExcelCommand}"
+                        Content="📊 Excel"
+                        Margin="0,0,6,0"
+                        ToolTip="تصدير إلى Excel"/>
+
+        <Button Command="{Binding ExportPdfCommand}"
+                        Content="📕 PDF"
+                        ToolTip="تصدير إلى PDF"/>
+      </StackPanel>
+    </Border>
+
+    <!-- الجدول -->
+    <DataGrid Grid.Row="1"
                   ItemsSource="{Binding Items}"
                   AutoGenerateColumns="False"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="المعرّف" Binding="{Binding Key}" Width="120"/>
-                <DataGridTextColumn Header="الاسم" Binding="{Binding Name}" Width="*"/>
-                <DataGridTextColumn Header="الفئة" Binding="{Binding Category}" Width="150"/>
-                <DataGridTextColumn Header="السعر" Binding="{Binding Price, StringFormat={}{0:N2}}" Width="120"/>
-                <DataGridTextColumn Header="المخزون" Binding="{Binding Stock}" Width="100"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  SelectionMode="Extended"
+                  AlternatingRowBackground="{DynamicResource App.SurfaceBrush}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="المعرّف" Binding="{Binding Key}" Width="120"/>
+        <DataGridTextColumn Header="الاسم" Binding="{Binding Name}" Width="*"/>
+        <DataGridTextColumn Header="الفئة" Binding="{Binding Category}" Width="150"/>
+        <DataGridTextColumn Header="السعر" Binding="{Binding Price, StringFormat={}{0:N2}}" Width="120"/>
+        <DataGridTextColumn Header="المخزون" Binding="{Binding Stock}" Width="100"/>
+      </DataGrid.Columns>
+    </DataGrid>
 
-        <TextBlock Grid.Row="1" Text="{Binding StatusMessage}"
-                   Margin="0,6,0,0"
-                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
-    </Grid>
+    <!-- الحالة -->
+    <Border Grid.Row="2"
+                Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4"
+                Margin="0,8,0,0">
+      <TextBlock Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+    </Border>
+  </Grid>
 </UserControl>

@@ -3,9 +3,8 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using AppFramework.Abstractions.Contracts;
 using AppFramework.Abstractions.Services;
-using AppFramework.Core.Navigation;
-using AppFramework.Core.ViewTemplates;
 using AppFramework.Controls.Menus;
+using AppFramework.Core.Navigation;
 using SalesApp.Wpf.ViewModels;
 
 namespace SalesApp.Wpf;
@@ -14,27 +13,28 @@ public partial class MainWindow : Window
 {
     private readonly ShellViewModel _shell;
     private readonly IServiceProvider _services;
-    private readonly IViewTemplateHost _viewHost;
     private readonly INavigationService _navigation;
+    private readonly IMenuManager _menuManager;
 
     public MainWindow(ShellViewModel shell, IServiceProvider services)
     {
         _shell = shell ?? throw new ArgumentNullException(nameof(shell));
         _services = services ?? throw new ArgumentNullException(nameof(services));
 
-        _viewHost = _services.GetRequiredService<IViewTemplateHost>();
         _navigation = _services.GetRequiredService<INavigationService>();
+        _menuManager = _services.GetRequiredService<IMenuManager>();
 
         InitializeComponent();
 
-        // اربط MenuHostControl
-        PART_MenuHost.MenuManager = _services.GetRequiredService<IMenuManager>();
+        // ربط MenuHostControl
+        PART_MenuHost.MenuManager = _menuManager;
         PART_MenuHost.ProviderRegistry = _services.GetRequiredService<MenuProviderRegistry>();
 
+        // DataContext للـ Shell
         DataContext = _shell;
         _shell.AttachServices(_services);
 
-        _viewHost.ViewRendered += OnViewRendered;
+        // راقب تغيير الشاشة النشطة
         _shell.PropertyChanged += OnShellPropertyChanged;
 
         Loaded += OnLoaded;
@@ -43,11 +43,10 @@ public partial class MainWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         // سجّل قائمة Shell
-        var menu = _services.GetRequiredService<IMenuManager>();
-        menu.RegisterScreen("Shell", _shell.BuildMenu);
-        menu.ActivateScreen("Shell", _shell);
+        _menuManager.RegisterScreen("Shell", _shell.BuildMenu);
+        _menuManager.ActivateScreen("Shell", _shell);
 
-        // افتح Orders
+        // افتح شاشة Orders افتراضيًا
         _shell.OpenOrdersCommand.Execute(null);
     }
 
@@ -57,12 +56,10 @@ public partial class MainWindow : Window
         var screenId = _shell.ActiveScreenId;
         if (string.IsNullOrEmpty(screenId)) return;
 
-        _ = OpenScreenInternalAsync(screenId);
+        _ = OpenScreenAsync(screenId);
     }
 
-    private System.EventHandler<AppFramework.Abstractions.Models.ViewTemplates.ViewMode>? _currentModeHandler;
-
-    private async System.Threading.Tasks.Task OpenScreenInternalAsync(string screenId)
+    private async System.Threading.Tasks.Task OpenScreenAsync(string screenId)
     {
         try
         {
@@ -70,24 +67,15 @@ public partial class MainWindow : Window
 
             var navService = _navigation as NavigationService;
             var vm = navService?.GetOpenScreen(screenId)?.ViewModel;
-            if (vm is null) return;
-
-            // ✅ افصل الاشتراك القديم
-            DetachModeHandler();
-
-            var defaultMode = AppFramework.Abstractions.Models.ViewTemplates.ViewMode.Grid;
-            _viewHost.ShowInMode(vm, defaultMode, "MainContentRegion");
-
-            // ✅ إذا كان الـ ViewModel يدعم IViewModeAware، اشترك في ModeChanged
-            if (vm is IViewModeAware modeAware)
+            if (vm is null)
             {
-                _currentModeHandler = (_, newMode) =>
-                {
-                    Dispatcher.Invoke(() =>
-                        _viewHost.ShowInMode(vm, newMode, "MainContentRegion"));
-                };
-                modeAware.ModeChanged += _currentModeHandler;
+                MessageBox.Show($"لم يتم العثور على ViewModel للشاشة {screenId}", "تنبيه",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
+            // ScreenViewHost يستمع لـ IViewModeAware.ModeChanged تلقائيًا
+            PART_ScreenHost.DataContext = vm;
         }
         catch (Exception ex)
         {
@@ -95,32 +83,13 @@ public partial class MainWindow : Window
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
-    private void DetachModeHandler()
+    private void OnModeChanged(object? sender, AppFramework.Abstractions.Models.ViewTemplates.ViewMode mode)
     {
-        if (_currentModeHandler is null) return;
-
-        // نبحث عن الشاشة الحالية
-        var navService = _navigation as NavigationService;
-        var current = navService?.Current;
-        if (current is not null)
-        {
-            var vm = navService?.GetOpenScreen(current.TargetId)?.ViewModel;
-            if (vm is IViewModeAware modeAware)
-                modeAware.ModeChanged -= _currentModeHandler;
-        }
-
-        _currentModeHandler = null;
-    }
-
-    private void OnViewRendered(object? sender, ViewRenderedEventArgs e)
-    {
-        Dispatcher.Invoke(() => PART_MainContent.Content = e.View);
+        Dispatcher.Invoke(() => PART_ScreenHost.ViewMode = mode);
     }
 
     protected override void OnClosed(EventArgs e)
     {
-        _viewHost.ViewRendered -= OnViewRendered;
         _shell.PropertyChanged -= OnShellPropertyChanged;
         base.OnClosed(e);
     }
