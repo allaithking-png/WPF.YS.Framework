@@ -19,4 +19,10 @@
     <ProjectReference Include="..\AppFramework.Data\AppFramework.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Connectivity\" />
+    <Folder Include="DependencyInjection\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
