@@ -19,6 +19,9 @@ public interface IReportService
     /// <summary>تصيير التقرير بصيغة معيّنة.</summary>
     Task<byte[]> RenderAsync(ReportRequest request, ReportExportFormat format, CancellationToken ct = default);
 
+    /// <summary>تصدير التقرير إلى ملف بصيغة معيّنة.</summary>
+    Task ExportAsync(ReportRequest request, ReportExportFormat format, string targetPath, CancellationToken ct = default);
+
     /// <summary>عرض معاينة التقرير في نافذة.</summary>
     void ShowPreview(ReportResult result);
 }

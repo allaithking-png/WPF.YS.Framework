@@ -37,6 +37,7 @@ public static class AppHost
         if (_host is not null) throw new InvalidOperationException("AppHost already started.");
 
         _host = builder.Build();
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
         // ✅ 1) طبّق ViewTemplates
         Scanning.ViewTemplateScanner.ApplyTo(_host.Services);
@@ -52,7 +53,6 @@ public static class AppHost
 
         // 3) هيّئ AppServices
         AppServices.Initialize(_host.Services);
-
         await _host.StartAsync(ct);
 
         var logger = _host.Services.GetService<ILoggerFactory>()?.CreateLogger("AppFramework.Hosting");
