@@ -20,4 +20,9 @@
     <ProjectReference Include="..\AppFramework.Abstractions\AppFramework.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sources\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using AppFramework.Data.Sqlite;
 using AppFramework.Data.Storage;
+using AppFramework.Abstractions.Services;
+using AppFramework.Data.Services;
 
 namespace AppFramework.Data.DependencyInjection;
 
@@ -43,7 +45,7 @@ public static class DataServiceCollectionExtensions
 
         // المخزن المحلي
         services.AddSingleton<ILocalStore, SqliteLocalStore>();
-
+        services.AddSingleton<IDataService, DataService>();
         return services;
     }
 
