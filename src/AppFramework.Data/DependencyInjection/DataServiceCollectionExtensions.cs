@@ -7,6 +7,7 @@ using AppFramework.Data.Storage;
 using AppFramework.Abstractions.Services;
 using AppFramework.Data.Services;
 
+
 namespace AppFramework.Data.DependencyInjection;
 
 /// <summary>
@@ -46,7 +47,14 @@ public static class DataServiceCollectionExtensions
         // المخزن المحلي
         services.AddSingleton<ILocalStore, SqliteLocalStore>();
         services.AddSingleton<IDataService, DataService>();
+
+        // ✅ طبّق Migrations عند بدء الـ Host
+        services.AddHostedService<Startup.LocalDbMigrator>();
+
         return services;
+
+
+        
     }
 
     // ==========================================================

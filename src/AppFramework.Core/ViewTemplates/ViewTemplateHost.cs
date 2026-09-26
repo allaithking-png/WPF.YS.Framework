@@ -188,15 +188,4 @@ public sealed class ViewTemplateHost : IViewTemplateHost
     }
 }
 
-/// <summary>حدث ViewRendered.</summary>
-public sealed class ViewRenderedEventArgs : EventArgs
-{
-    public FrameworkElement View { get; }
-    public ViewMode Mode { get; }
 
-    public ViewRenderedEventArgs(FrameworkElement view, ViewMode mode)
-    {
-        View = view;
-        Mode = mode;
-    }
-}
