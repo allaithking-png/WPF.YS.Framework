@@ -88,8 +88,15 @@ public sealed class AssemblyScanner
         _services.AddSingleton(registration);
         _result.Screens.Add(attr.Id);
 
+        // ✅ سجّل أيضًا في Explorer لاحقًا (عبر callback)
+        _pendingExplorerRegistrations.Add(registration);
+
         _logger?.LogDebug("Registered screen: {Id} ({Type})", attr.Id, type.Name);
     }
+    private readonly List<ScreenRegistration> _pendingExplorerRegistrations = new();
+
+    /// <summary>يُستدعى بعد Build() لتسجيل الشاشات في Explorer.</summary>
+    public IReadOnlyList<ScreenRegistration> GetScreenRegistrations() => _pendingExplorerRegistrations;
 
     private void RegisterDataSourceIfMarked(Type type)
     {

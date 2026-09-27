@@ -14,7 +14,7 @@ public sealed class ProductsViewModel : BaseListViewModel<ProductDto>
     public override string ScreenTitle => "المنتجات";
     public override string DataSourceKey => "Products";
     public override IReadOnlyList<ViewMode> SupportedModes { get; } =
-    new[] { ViewMode.Grid, ViewMode.Card };
+    new[] { ViewMode.Grid, ViewMode.Card ,ViewMode.Kanban,ViewMode.Custom};
 
     protected override void OnServicesAttached()
     {

@@ -1,12 +1,13 @@
-using System;
-using System.Windows;
-using System.Windows.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using AppFramework.Abstractions.Contracts;
 using AppFramework.Abstractions.Services;
 using AppFramework.Controls.Theming;
 using AppFramework.Core.ViewTemplates;
 using AppFramework.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace SalesApp.Wpf;
 
@@ -41,12 +42,12 @@ public partial class App : Application
                 services.AddSingleton<ViewModels.OrdersViewModel>();
                 services.AddSingleton<ViewModels.ProductsViewModel>();
                 services.AddSingleton<ViewModels.CustomersViewModel>();   // ← جديد
+                services.AddSingleton<ViewModels.ExplorerViewModel>();
 
                 // Data Sources
                 services.AddSingleton<Data.OrdersDataSource>();
                 services.AddSingleton<Data.ProductsDataSource>();
                 services.AddSingleton<Data.CustomersDataSource>();        // ← جديد
-
                 // ثبت مصادر البيانات في IDataService
                 services.AddSingleton<AppFramework.Abstractions.Services.IDataSource>(sp => sp.GetRequiredService<Data.OrdersDataSource>());
                 services.AddSingleton<AppFramework.Abstractions.Services.IDataSource>(sp => sp.GetRequiredService<Data.ProductsDataSource>());
@@ -55,6 +56,15 @@ public partial class App : Application
         try
         {
             await AppHost.StartAsync(builder);
+            // بعد AppHost.StartAsync(builder);
+            var explorer = AppHost.GetService<INavigationExplorer>();
+            explorer.RegisterScreen("Orders.List", "الطلبات", "🛒", "المبيعات");
+            explorer.RegisterScreen("Products.List", "المنتجات", "📦", "المبيعات");
+            explorer.RegisterScreen("Customers.List", "العملاء", "👥", "المبيعات");
+            explorer.RegisterReport("Orders.Report", "تقرير الطلبات", "📊");
+            explorer.RegisterReport("Products.Report", "تقرير المنتجات", "📊");
+            explorer.RegisterReport("Customers.Report", "تقرير العملاء", "📊");
+            explorer.RegisterScreen("Explorer", "مستكشف التنقل", "🗂️", "النظام");
         }
         catch (Exception ex)
         {
@@ -80,6 +90,13 @@ public partial class App : Application
     {
         try
         {
+            // ✅ احفظ Explorer profile
+            var explorer = AppHost.Services.GetService<INavigationExplorer>();
+            if (explorer is not null)
+            {
+                await explorer.SaveAsync("demo-user");
+            }
+
             // احفظ الثيم
             var themeService = AppHost.Services.GetService<IThemeService>();
             themeService?.SaveCurrentTheme("demo-user");

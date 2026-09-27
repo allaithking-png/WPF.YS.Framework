@@ -65,6 +65,7 @@ public sealed partial class ShellViewModel : ObservableObject, IAppAware, IMenuA
                     new MenuItemDescriptor { Title = "الطلبات", Command = OpenOrdersCommand },
                     new MenuItemDescriptor { Title = "المنتجات", Command = OpenProductsCommand },
              new MenuItemDescriptor { Title = "العملاء", Command = OpenCustomersCommand },
+             new MenuItemDescriptor { Title = "مستكشف التنقل", Command = OpenExplorerCommand },
                 }
             },
             new MenuItemDescriptor
@@ -88,6 +89,8 @@ public sealed partial class ShellViewModel : ObservableObject, IAppAware, IMenuA
             }
         }
     };
+    [RelayCommand]
+    private void OpenExplorer() => ActiveScreenId = "Explorer";
 
     [RelayCommand]
     private void OpenOrders() => ActiveScreenId = "Orders.List";

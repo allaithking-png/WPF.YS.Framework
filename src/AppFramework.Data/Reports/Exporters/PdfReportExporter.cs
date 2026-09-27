@@ -115,6 +115,7 @@ public sealed class PdfReportExporter : IReportExporter, IReportRenderer
                     txt.Span(" من ").FontSize(8);
                     txt.TotalPages().FontSize(8);
                 });
+                
             });
         }).GeneratePdf();
     }

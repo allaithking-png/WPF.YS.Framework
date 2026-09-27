@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppFramework.Abstractions\AppFramework.Abstractions.csproj" />
+    <ProjectReference Include="..\AppFramework.Core\AppFramework.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Themes\**\*.xaml">
@@ -33,6 +34,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Attached\" />
+    <Folder Include="Navigation\" />
+    <Folder Include="Converters\" />
     <Folder Include="Screens\" />
     <Folder Include="Notifications\" />
     <Folder Include="Themes\Skins\" />

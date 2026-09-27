@@ -9,7 +9,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="0"/>
     </Grid.RowDefinitions>
 
     <!-- شريط الأدوات -->
@@ -19,7 +19,7 @@
                 BorderThickness="0,0,0,1"
                 Padding="8,6"
                 Margin="0,0,0,8">
-      <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Horizontal" >
         <TextBlock Text="📦 المنتجات"
                            FontSize="16"
                            FontWeight="SemiBold"
@@ -68,13 +68,13 @@
     </DataGrid>
 
     <!-- الحالة -->
-    <Border Grid.Row="2"
+    <Border Grid.Row="2"   Visibility="Hidden" 
                 Background="{DynamicResource App.SurfaceBrush}"
                 BorderBrush="{DynamicResource App.BorderBrush}"
                 BorderThickness="0,1,0,0"
                 Padding="8,4"
                 Margin="0,8,0,0">
-      <TextBlock Text="{Binding StatusMessage}"
+      <TextBlock Text="{Binding StatusMessage}"  Visibility="Hidden" 
                        Foreground="{DynamicResource App.TextSecondaryBrush}"/>
     </Border>
   </Grid>

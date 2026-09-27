@@ -14,7 +14,6 @@ namespace AppFramework.Core.Navigation;
 
 /// <summary>
 /// تنفيذ <see cref="INavigationService"/>.
-/// يدير فتح/إغلاق الشاشات، دورة حياتها، والتنقل بينها.
 /// </summary>
 public sealed class NavigationService : INavigationService
 {
@@ -38,10 +37,29 @@ public sealed class NavigationService : INavigationService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    // ==========================================================
+    //  State
+    // ==========================================================
+
     public NavigationContext? Current { get; private set; }
+
+    public string? ActiveScreenId => Current?.TargetId;
+
+    public IReadOnlyList<OpenScreenInfo> OpenScreens
+        => _openScreens.Values.Select(ToInfo).ToList();
+
+    /// <summary>وصول داخلي لسجلات الشاشات.</summary>
+    public IReadOnlyCollection<OpenScreen> OpenScreenRecords => _openScreens.Values;
+
+    // ==========================================================
+    //  Events
+    // ==========================================================
 
     public event EventHandler<NavigationContext>? Navigating;
     public event EventHandler<NavigationContext>? Navigated;
+    public event EventHandler<OpenScreenInfo>? ScreenOpened;
+    public event EventHandler<OpenScreenInfo>? ScreenClosed;
+    public event EventHandler<string?>? ActiveScreenChanged;
 
     // ==========================================================
     //  Open Screen
@@ -60,18 +78,16 @@ public sealed class NavigationService : INavigationService
 
         context ??= new NavigationContext(screenId, IsMultiOpen: registration.SupportsMultiOpen);
 
-        // 1) حدث Navigating — يمكن إلغاؤه
         Navigating?.Invoke(this, context);
 
-        // 2) هل الشاشة مفتوحة من قبل؟
+        // إن كانت الشاشة مفتوحة مسبقًا (ولم تكن multi-open)
         if (!registration.SupportsMultiOpen && _openScreens.TryGetValue(screenId, out var existing))
         {
-            // فعّلها فقط
             await ActivateExistingAsync(existing, context);
             return NavigationResult.Ok(screenId);
         }
 
-        // 3) إنشاء ViewModel
+        // أنشئ ViewModel
         var viewModel = _services.GetService(registration.ViewModelType);
         if (viewModel is null)
         {
@@ -79,13 +95,13 @@ public sealed class NavigationService : INavigationService
             return NavigationResult.Fail($"Could not resolve ViewModel for screen '{screenId}'.", screenId);
         }
 
-        // 4) ربط الخدمات
+        // ربط الخدمات
         if (viewModel is IAppAware aware && viewModel is not Base.BaseViewModel)
         {
             aware.AttachServices(_services);
         }
 
-        // 5) استدعاء OnActivated
+        // OnActivated
         if (viewModel is IScreenAware screenAware)
         {
             var activationContext = new ScreenActivationContext(
@@ -96,22 +112,21 @@ public sealed class NavigationService : INavigationService
             await screenAware.OnActivatedAsync(activationContext);
         }
 
-        // 6) تحميل البيانات الأولية
+        // تحميل البيانات
         if (viewModel is IDataAware dataAware)
         {
             await dataAware.LoadInitialAsync();
         }
 
-        // 7) حل الـ View (اختياري — ViewTemplateHost قد يتولّى ذلك)
+        // حل الـ View (اختياري)
         var view = _viewResolver.ResolveView(viewModel);
         if (view is null)
         {
-            // لا نُسقط — ViewTemplateHost سيعرض الـ View لاحقًا
             _logger.LogDebug("No direct View resolved for {Type}; will rely on ViewTemplateHost.",
                 viewModel.GetType().Name);
         }
 
-        // 8) تخزين الحالة
+        // خزّن الحالة
         var openScreen = new OpenScreen(
             ScreenId: screenId,
             InstanceKey: context.InstanceKey,
@@ -122,22 +137,44 @@ public sealed class NavigationService : INavigationService
 
         _openScreens[context.InstanceKey] = openScreen;
 
-        // 9) تسجيل في MenuManager
+        // سجّل في MenuManager
         TryActivateMenu(screenId, viewModel);
 
-        // 10) تحديد "الشاشة الحالية"
+        // حدّث Current
         Current = context;
         _history.Push(context);
 
-        // 11) حدث Navigated
+        // ✅ أطلق الأحداث
+        ScreenOpened?.Invoke(this, ToInfo(openScreen));
         Navigated?.Invoke(this, context);
+        ActiveScreenChanged?.Invoke(this, screenId);
 
-        _logger.LogInformation("Opened screen {ScreenId} (instance {InstanceKey})", screenId, context.InstanceKey);
+        _logger.LogInformation("Opened screen {ScreenId} (instance {InstanceKey})",
+            screenId, context.InstanceKey);
+
         return NavigationResult.Ok(screenId);
     }
 
     // ==========================================================
-    //  Close Screen
+    //  Activate (switch to)
+    // ==========================================================
+
+    public async Task<bool> ActivateScreenAsync(string screenId)
+    {
+        if (string.IsNullOrEmpty(screenId)) return false;
+
+        var openScreen = _openScreens.Values.FirstOrDefault(s =>
+            string.Equals(s.ScreenId, screenId, StringComparison.OrdinalIgnoreCase));
+
+        if (openScreen is null) return false;
+
+        var context = new NavigationContext(screenId);
+        await ActivateExistingAsync(openScreen, context);
+        return true;
+    }
+
+    // ==========================================================
+    //  Close
     // ==========================================================
 
     public async Task CloseScreenAsync(string screenId)
@@ -148,15 +185,11 @@ public sealed class NavigationService : INavigationService
             .Where(s => string.Equals(s.ScreenId, screenId, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        if (toClose.Count == 0)
-        {
-            _logger.LogDebug("CloseScreen: no open screen with id {ScreenId}", screenId);
-            return;
-        }
+        if (toClose.Count == 0) return;
 
         foreach (var openScreen in toClose)
         {
-            // 1) تحقق قبل الإغلاق
+            // تحقق قبل الإغلاق
             if (openScreen.ViewModel is IScreenAware screenAware)
             {
                 bool canClose = await screenAware.OnClosingAsync();
@@ -167,30 +200,59 @@ public sealed class NavigationService : INavigationService
                 }
             }
 
-            // 2) OnDeactivated
+            // OnDeactivated
             if (openScreen.ViewModel is IScreenAware sa2)
             {
                 await sa2.OnDeactivatedAsync();
             }
 
-            // 3) إزالة
+            // إزالة
             _openScreens.Remove(openScreen.InstanceKey);
+
+            // ✅ أطلق ScreenClosed
+            ScreenClosed?.Invoke(this, ToInfo(openScreen));
         }
 
-        // 4) إلغاء تفعيل القائمة
+        // إلغاء تفعيل القائمة
         TryDeactivateMenu(screenId);
 
-        // 5) تحديث Current
+        // حدّث Current
         if (Current is not null && string.Equals(Current.TargetId, screenId, StringComparison.OrdinalIgnoreCase))
         {
             Current = _openScreens.Values.LastOrDefault()?.Context;
         }
 
+        // ✅ أطلق ActiveScreenChanged
+        ActiveScreenChanged?.Invoke(this, Current?.TargetId);
+
         _logger.LogInformation("Closed screen {ScreenId}", screenId);
     }
 
+    public async Task CloseAllExceptAsync(string screenId)
+    {
+        var toClose = _openScreens.Values
+            .Where(s => !string.Equals(s.ScreenId, screenId, StringComparison.OrdinalIgnoreCase))
+            .Select(s => s.ScreenId)
+            .Distinct()
+            .ToList();
+
+        foreach (var id in toClose)
+            await CloseScreenAsync(id);
+    }
+
+    public async Task CloseAllAsync()
+    {
+        var toClose = _openScreens.Values
+            .Select(s => s.ScreenId)
+            .Distinct()
+            .ToList();
+
+        foreach (var id in toClose)
+            await CloseScreenAsync(id);
+    }
+
     // ==========================================================
-    //  Open Report (stub — لاحقًا في PR-06/PR-08)
+    //  Reports / URLs
     // ==========================================================
 
     public Task<NavigationResult> OpenReportAsync(
@@ -200,10 +262,6 @@ public sealed class NavigationService : INavigationService
         _logger.LogWarning("OpenReportAsync is not implemented yet (reportId: {ReportId})", reportId);
         return Task.FromResult(NavigationResult.Fail("Reports not implemented yet.", reportId));
     }
-
-    // ==========================================================
-    //  Open URL
-    // ==========================================================
 
     public Task OpenUrlAsync(string url)
     {
@@ -225,13 +283,9 @@ public sealed class NavigationService : INavigationService
     }
 
     // ==========================================================
-    //  Public helpers
+    //  Helpers
     // ==========================================================
 
-    /// <summary>كل الشاشات المفتوحة حاليًا.</summary>
-    public IReadOnlyCollection<OpenScreen> OpenScreens => _openScreens.Values;
-
-    /// <summary>البحث عن شاشة مفتوحة بمعرّفها.</summary>
     public OpenScreen? GetOpenScreen(string screenId)
         => _openScreens.Values.FirstOrDefault(s =>
             string.Equals(s.ScreenId, screenId, StringComparison.OrdinalIgnoreCase));
@@ -240,9 +294,23 @@ public sealed class NavigationService : INavigationService
     //  Internal
     // ==========================================================
 
+    private OpenScreenInfo ToInfo(OpenScreen openScreen)
+    {
+        var reg = openScreen.Registration;
+        var isActive = Current is not null
+            && string.Equals(Current.TargetId, openScreen.ScreenId, StringComparison.OrdinalIgnoreCase);
+
+        return new OpenScreenInfo(
+            ScreenId: openScreen.ScreenId,
+            InstanceKey: openScreen.InstanceKey,
+            Title: reg.Title ?? openScreen.ScreenId,
+            Icon: reg.Icon,
+            IsActive: isActive,
+            OpenedAt: DateTime.UtcNow);
+    }
+
     private async Task ActivateExistingAsync(OpenScreen existing, NavigationContext context)
     {
-        // OnActivated مرة أخرى (يُستخدم لتحديث الـ target location مثلًا)
         if (existing.ViewModel is IScreenAware screenAware)
         {
             var activationContext = new ScreenActivationContext(
@@ -258,7 +326,9 @@ public sealed class NavigationService : INavigationService
         Current = context;
         _history.Push(context);
 
+        // ✅ أطلق الأحداث
         Navigated?.Invoke(this, context);
+        ActiveScreenChanged?.Invoke(this, context.TargetId);
     }
 
     private void TryActivateMenu(string screenId, object viewModel)
@@ -266,7 +336,15 @@ public sealed class NavigationService : INavigationService
         try
         {
             var menuManager = _services.GetService<IMenuManager>();
-            menuManager?.ActivateScreen(screenId, viewModel);
+            if (menuManager is null) return;
+
+            // ✅ إن كان ViewModel ينفّذ IMenuAware، سجّل الـ factory تلقائيًا
+            if (viewModel is IMenuAware menuAware)
+            {
+                menuManager.RegisterScreen(screenId, ctx => menuAware.BuildMenu(ctx));
+            }
+
+            menuManager.ActivateScreen(screenId, viewModel);
         }
         catch (Exception ex)
         {
@@ -288,11 +366,11 @@ public sealed class NavigationService : INavigationService
     }
 }
 
-/// <summary>حالة شاشة مفتوحة.</summary>
+/// <summary>حالة شاشة مفتوحة (داخلي).</summary>
 public sealed record OpenScreen(
     string ScreenId,
     string InstanceKey,
     object ViewModel,
-    object? View,                   // ← nullable
+    object? View,
     NavigationContext Context,
     ScreenRegistration Registration);

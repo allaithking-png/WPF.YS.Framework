@@ -7,6 +7,7 @@ using AppFramework.Core.Navigation;
 using AppFramework.Core.Scanning;
 using AppFramework.Core.Services;
 using AppFramework.Core.ViewTemplates;
+using AppFramework.Abstractions.Contracts;
 
 namespace AppFramework.Core.DependencyInjection;
 
@@ -32,6 +33,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IScreenViewResolver, WpfScreenViewResolver>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<INavigationSessionService, JsonNavigationSessionService>();
+
+        // Navigation Explorer                                    // ← جديد
+        services.AddSingleton<IUserNavProfileStore, JsonProfileStore>();
+        services.AddSingleton<INavigationExplorer, NavigationExplorerService>();
 
         // === View Templates ===
         services.AddSingleton<IViewTemplateRegistry, ViewTemplateRegistry>();
