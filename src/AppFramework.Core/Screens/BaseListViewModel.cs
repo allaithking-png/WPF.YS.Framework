@@ -55,7 +55,7 @@ public abstract partial class BaseListViewModel<TDto> : ObservableObject,
         new[] { ViewMode.Grid, ViewMode.Card };
 
     /// <summary>حجم الصفحة.</summary>
-    public virtual int PageSize => 100;
+    public virtual int PageSize => 1000;
 
     /// <summary>حقول البحث.</summary>
     public virtual IReadOnlyList<string> SearchFields => Array.Empty<string>();

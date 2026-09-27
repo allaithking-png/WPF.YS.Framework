@@ -1,10 +1,12 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using AppFramework.Abstractions.Contracts;
+using AppFramework.Abstractions.Models.Screens;
+using AppFramework.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using AppFramework.Core.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AppFramework.Hosting;
 
@@ -41,6 +43,14 @@ public static class AppHost
 
         // ✅ 1) طبّق ViewTemplates
         Scanning.ViewTemplateScanner.ApplyTo(_host.Services);
+
+        //var explorer = _host.Services.GetService<INavigationExplorer>();
+        //var scanner = builder.LastScanner;   // أو طريقة أخرى
+        //if (explorer is not null)
+        //{
+        //    foreach (var screen in _screenRegistrations)
+        //        explorer.RegisterScreen(screen.Id, screen.Title, screen.Icon, screen.Category);
+        //}
 
         // ✅ 2) فعّل DataSources في DataService
         var dataService = _host.Services.GetService<AppFramework.Abstractions.Services.IDataService>();

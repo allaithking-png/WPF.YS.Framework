@@ -3,42 +3,54 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:menus="clr-namespace:AppFramework.Controls.Menus;assembly=AppFramework.Controls"
         xmlns:screens="clr-namespace:AppFramework.Controls.Screens;assembly=AppFramework.Controls"
+        xmlns:nav="clr-namespace:AppFramework.Controls.Navigation;assembly=AppFramework.Controls"
         Title="{Binding Title}"
         Width="1100" Height="700"
         WindowStartupLocation="CenterScreen">
-  <Grid>
+  <Grid Background="{DynamicResource App.BackgroundBrush}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
+      <!-- Menu -->
       <RowDefinition Height="*"/>
+      <!-- Content -->
       <RowDefinition Height="Auto"/>
+      <!-- Taskbar -->
+      <RowDefinition Height="0"/>
+      <!-- Status -->
     </Grid.RowDefinitions>
 
-    <!-- القائمة العلوية (MenuBar) -->
     <menus:MenuHostControl x:Name="PART_MenuHost"
-                               Grid.Row="0"
-                               PreferredHost="MenuBar"
-                               HorizontalAlignment="Stretch"/>
+                           Grid.Row="0"
+                           PreferredHost="MenuBar"
+                           HorizontalAlignment="Stretch"/>
 
-    <!-- محتوى الشاشة (ScreenViewHost) -->
     <screens:ScreenViewHost x:Name="PART_ScreenHost"
-                                Grid.Row="1"
-                                Margin="8"/>
+                            Grid.Row="1"
+                            Margin="8"
+                            Visibility="Collapsed"/>
 
-    <!-- شريط الحالة -->
-    <Border Grid.Row="2" 
-                Background="{DynamicResource App.SurfaceBrush}"
-                BorderBrush="{DynamicResource App.BorderBrush}"
-                BorderThickness="0,1,0,0"
-                Padding="12,6">
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="الإطار: WPF.YS.Framework 1.0.0-alpha.1" 
-                           Foreground="{DynamicResource App.TextSecondaryBrush}"
-                           Margin="0,0,20,0"/>
+    <ContentControl x:Name="PART_CustomHost"
+                    Grid.Row="1"
+                    Margin="0"
+                    Visibility="Collapsed"/>
+
+    <!-- ✅ Taskbar -->
+    <nav:ScreenTaskbar x:Name="PART_Taskbar" Grid.Row="2"/>
+
+    <Border Grid.Row="3"  Visibility="Hidden" 
+            Background="{DynamicResource App.SurfaceBrush}"
+            BorderBrush="{DynamicResource App.BorderBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="12,6">
+      <StackPanel Orientation="Horizontal"  Visibility="Hidden" >
+        <TextBlock Text="الإطار: WPF.YS.Framework 1.0.0-alpha.1"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Margin="0,0,20,0"/>
         <TextBlock Text="{Binding ActiveScreenId, StringFormat='الشاشة: {0}'}"
-                           Foreground="{DynamicResource App.TextSecondaryBrush}"
-                           Margin="0,0,20,0"/>
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Margin="0,0,20,0"/>
         <TextBlock Text="{Binding CurrentTheme, StringFormat='الثيم: {0}'}"
-                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"/>
       </StackPanel>
     </Border>
   </Grid>

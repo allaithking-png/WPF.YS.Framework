@@ -36,7 +36,7 @@
                             <Border Margin="0,6,0,0" Padding="6,2" CornerRadius="3"
                                     Background="{DynamicResource App.PrimaryBrush}"
                                     HorizontalAlignment="Left">
-                                <TextBlock Text="{Binding Status}"
+                <TextBlock Text="{Binding Status}"  Visibility="Hidden" 
                                            Foreground="{DynamicResource App.TextInverseBrush}"
                                            FontSize="11"/>
                             </Border>

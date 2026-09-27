@@ -1,12 +1,15 @@
+using AppFramework.Abstractions.Contracts;
+using AppFramework.Abstractions.Models.ViewTemplates;
+using AppFramework.Abstractions.Services;
+using AppFramework.Controls.Theming;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using AppFramework.Abstractions.Contracts;
-using AppFramework.Abstractions.Models.ViewTemplates;
 
 namespace AppFramework.Controls.Screens;
 
@@ -16,12 +19,49 @@ namespace AppFramework.Controls.Screens;
 public partial class ScreenViewHost : UserControl
 {
     private IViewModeAware? _currentModeAware;
-
+    private INotifyPropertyChanged? _currentNotifyVm;
+    private IThemeService? _themeService;
     public ScreenViewHost()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+    }
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            _themeService = AppFramework.Core.DependencyInjection.AppServices
+                .TryGet<IThemeService>();
+
+            if (_themeService is not null)
+                _themeService.ThemeChanged += OnThemeChanged;
+        }
+        catch { }
+    }
+    private void OnThemeChanged(object? sender, AppTheme theme)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            // ✅ أعِد رسم المحتوى ليطبّق الثيم الجديد
+            RenderContent();
+        });
+        //Dispatcher.Invoke(() =>
+        //{
+        //    if (PART_ContentHost.Content is DataGrid dg)
+        //    {
+        //        // ✅ أعِد ربط ItemsSource
+        //        var items = dg.ItemsSource;
+        //        dg.ItemsSource = null;
+        //        dg.ItemsSource = items;
+
+        //        // أو: أعِد تطبيق Style
+        //        var rowStyle = dg.RowStyle;
+        //        dg.RowStyle = null;
+        //        dg.RowStyle = rowStyle;
+        //    }
+        //});
     }
 
     // ==========================================================
@@ -70,6 +110,7 @@ public partial class ScreenViewHost : UserControl
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
+        DetachVmListener();
         DetachModeAware();
         if (e.NewValue is null) return;
 
@@ -107,18 +148,85 @@ public partial class ScreenViewHost : UserControl
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         };
+        // ✅ حدّث الـ Pagination
+        UpdatePaginationVisibility();
+
+        // ✅ حدّث الأدوات
+        //UpdateToolbarVisibility();
         // Toolbar
         BuildToolbar(e.NewValue);
 
         // Content
         RenderContent();
     }
+    private void DetachVmListener()
+    {
+        if (_currentNotifyVm is not null)
+        {
+            _currentNotifyVm.PropertyChanged -= OnVmPropertyChanged;
+            _currentNotifyVm = null;
+        }
+    }
+
+    private int _lastTotalPages = -1;
+
+    private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != "TotalPages" && e.PropertyName != "TotalCount") return;
+
+        var totalPagesProp = DataContext?.GetType().GetProperty("TotalPages");
+        var totalPages = (int?)totalPagesProp?.GetValue(DataContext) ?? 1;
+
+        if (totalPages == _lastTotalPages) return;   // ✅ لا تغيير → لا تُحدّث
+        _lastTotalPages = totalPages;
+
+        UpdatePaginationVisibility();
+    }
+
+    private void UpdatePaginationVisibility()
+    {
+        if (PART_PaginationBar is null) return;
+
+        // اقرأ TotalPages من الـ ViewModel
+        var totalPagesProp = DataContext?.GetType().GetProperty("TotalPages");
+        var totalPages = totalPagesProp?.GetValue(DataContext) as int? ?? 1;
+
+        PART_PaginationBar.Visibility = totalPages > 1
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
     private void OnClearSearchClicked(object sender, RoutedEventArgs e)
     {
         PART_SearchBox.Text = "";
         PART_ClearSearchButton.Visibility = Visibility.Collapsed;
     }
-    private void OnUnloaded(object sender, RoutedEventArgs e) => DetachModeAware();
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        DetachModeAware();
+        DetachVmListener();   // ✅ جديد
+        if (_themeService is not null)
+        {
+            _themeService.ThemeChanged -= OnThemeChanged;
+            _themeService = null;
+        }
+
+    }
+    //private void UpdateSearchVisibility()
+    //{
+    //    if (PART_SearchBar is null) return;
+
+    //    // إن كان ViewModel يدعم البحث
+    //    var hasSearch = DataContext?.GetType().GetProperty("SearchText") is not null;
+    //    var supportedModes = DataContext?.GetType().GetProperty("SupportedModes")?.GetValue(DataContext);
+
+    //    // للـ BaseListViewModel → نُظهر البحث دائمًا
+    //    // للـ شاشات أخرى → نُخفيه
+    //    var isListVm = DataContext?.GetType().Name.Contains("ViewModel") == true;
+
+    //    PART_SearchBar.Visibility = isListVm
+    //        ? Visibility.Visible
+    //        : Visibility.Collapsed;
+    //}
 
     private void DetachModeAware()
     {
@@ -230,15 +338,65 @@ public partial class ScreenViewHost : UserControl
     {
         if (DataContext is null) return;
 
-        FrameworkElement view = ViewMode switch
+        // 1) للـ Kanban والتخصيصات: استخدم ViewTemplate
+        if (ViewMode == ViewMode.Kanban
+            || ViewMode == ViewMode.Timeline
+            || ViewMode == ViewMode.Calendar)
+        {
+            var registry = GetViewTemplateRegistry();
+            var template = registry?.GetByMode(DataContext.GetType(), ViewMode);
+
+            if (template?.ViewType is not null)
+            {
+                try
+                {
+                    var view = (FrameworkElement)Activator.CreateInstance(template.ViewType)!;
+                    view.DataContext = DataContext;
+                    PART_ContentHost.Content = view;
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[ScreenViewHost] Rendered {template.ViewType.Name} via ViewTemplate");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[ScreenViewHost] Failed to create {template.ViewType.Name}: {ex.Message}");
+                }
+            }
+        }
+
+        // 2) Fallback: Grid / Card / List
+        FrameworkElement fallback = ViewMode switch
         {
             ViewMode.Card => new GenericCardView(),
             ViewMode.List => new GenericListView(),
             _ => CreateGridView()
         };
 
-        view.DataContext = DataContext;
-        PART_ContentHost.Content = view;
+        fallback.DataContext = DataContext;
+        PART_ContentHost.Content = fallback;
+
+        System.Diagnostics.Debug.WriteLine($"[ScreenViewHost] Rendered {fallback.GetType().Name}");
+    }
+
+    private IViewTemplateRegistry? GetViewTemplateRegistry()
+    {
+        try
+        {
+            return AppFramework.Core.DependencyInjection.AppServices
+                .TryGet<IViewTemplateRegistry>();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    private ViewTemplateDescriptor? GetViewTemplateFor(Type vmType, ViewMode mode)
+    {
+        var registry = AppFramework.Core.DependencyInjection.AppServices
+            .TryGet<AppFramework.Abstractions.Services.IViewTemplateRegistry>();
+        return registry?.GetByMode(vmType, mode)
+            ?? registry?.GetDefault(vmType);
     }
 
     private FrameworkElement CreateGridView()

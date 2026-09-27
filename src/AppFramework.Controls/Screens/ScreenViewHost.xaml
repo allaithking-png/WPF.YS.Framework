@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="900">
-  <Grid>
+  <Grid  Background="{DynamicResource App.BackgroundBrush}">
     <Grid.RowDefinitions>
       <!-- 0: Toolbar -->
       <RowDefinition Height="Auto"/>
@@ -16,7 +16,7 @@
       <!-- 3: Pagination -->
       <RowDefinition Height="Auto"/>
       <!-- 4: Status -->
-      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="0"/>
     </Grid.RowDefinitions>
 
     <!-- شريط الأدوات الديناميكي -->
@@ -93,7 +93,7 @@
     <!-- محتوى العرض -->
     <ContentControl Grid.Row="2" x:Name="PART_ContentHost" Margin="8"/>
     <!-- شريط Pagination -->
-    <Border Grid.Row="3"
+    <Border Grid.Row="3"  x:Name="PART_PaginationBar"
         Background="{DynamicResource App.SurfaceBrush}"
         BorderBrush="{DynamicResource App.BorderBrush}"
         BorderThickness="0,1,0,0"
@@ -107,6 +107,7 @@
         <TextBlock Grid.Column="0"
                    Text="{Binding PageStatus}"
                    VerticalAlignment="Center"
+                   
                    FontSize="11"
                    Foreground="{DynamicResource App.TextSecondaryBrush}"/>
 
@@ -166,12 +167,12 @@
       </Grid>
     </Border>
     <!-- شريط الحالة -->
-    <Border Grid.Row="4"
+    <Border Grid.Row="4"  Visibility="Hidden" 
                 Background="{DynamicResource App.SurfaceBrush}"
                 BorderBrush="{DynamicResource App.BorderBrush}"
                 BorderThickness="0,1,0,0"
-                Padding="10,4">
-      <TextBlock Text="{Binding StatusMessage}"
+                Padding="0,0">
+      <TextBlock Visibility="Hidden" Text="{Binding StatusMessage}"
                        Foreground="{DynamicResource App.TextSecondaryBrush}"
                        FontSize="11"/>
     </Border>

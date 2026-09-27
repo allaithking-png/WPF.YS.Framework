@@ -1,0 +1,71 @@
+<UserControl x:Class="AppFramework.Controls.Navigation.ExplorerIconItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Width="110" Height="120"
+             Cursor="Hand">
+    <Border x:Name="PART_Root"
+            CornerRadius="8"
+            Padding="8"
+            Background="Transparent"
+            BorderThickness="1"
+            BorderBrush="Transparent">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="📂 فتح" Click="OnOpenClicked"/>
+                <Separator/>
+                <MenuItem Header="📌 تثبيت / إلغاء" Click="OnTogglePinClicked"/>
+                <MenuItem Header="⭐ مفضلة / إلغاء" Click="OnToggleFavoriteClicked"/>
+                <Separator/>
+                <MenuItem Header="🚫 إخفاء" Click="OnHideClicked"/>
+            </ContextMenu>
+        </Border.ContextMenu>
+
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+            <!-- الأيقونة الكبيرة -->
+            <Border Width="56" Height="56"
+                    CornerRadius="10"
+                    Background="{DynamicResource App.SurfaceBrush}"
+                    Margin="0,8,0,10"
+                    HorizontalAlignment="Center">
+                <TextBlock x:Name="PART_Icon"
+                           Text="🖥️"
+                           FontSize="30"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- العنوان -->
+            <TextBlock x:Name="PART_Title"
+                       Text="شاشة"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       MaxWidth="96"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+
+            <!-- المؤشرات (نجمة/دبوس/عدد) -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,4,0,0">
+                <TextBlock x:Name="PART_StarIcon"
+                           Text="⭐"
+                           FontSize="10"
+                           Margin="0,0,4,0"
+                           Visibility="Collapsed"/>
+                <TextBlock x:Name="PART_PinIcon"
+                           Text="📌"
+                           FontSize="10"
+                           Margin="0,0,4,0"
+                           Visibility="Collapsed"/>
+                <TextBlock x:Name="PART_UsageCount"
+                           FontSize="10"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           Visibility="Collapsed"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

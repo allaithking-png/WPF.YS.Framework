@@ -21,7 +21,7 @@ public sealed class OrdersViewModel : BaseListViewModel<OrderDto>
     public override string ScreenId => "Orders.List";
     public override string ScreenTitle => "الطلبات";
     public override string DataSourceKey => "Orders";
-    public override int PageSize => 5;
+    //public override int PageSize => 5;
     public override IReadOnlyList<ViewMode> SupportedModes { get; } =
      new[] { ViewMode.Grid, ViewMode.Card, ViewMode.List, ViewMode.Kanban };
     protected override void OnServicesAttached()

@@ -1,0 +1,135 @@
+<UserControl x:Class="AppFramework.Controls.Navigation.LauncherIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             
+             Background="Transparent"
+             Cursor="Hand"
+             MouseLeftButtonDown="OnMouseLeftButtonDown"
+             MouseDoubleClick="OnMouseDoubleClick"
+             MouseMove="OnMouseMove"
+             MouseRightButtonUp="OnMouseRightButtonUp">
+    <Grid>
+        <StackPanel x:Name="PART_Layout"
+                    HorizontalAlignment="Center"
+                    Margin="4">
+            <!-- الأيقونة -->
+            <Border x:Name="PART_IconBorder"
+                    CornerRadius="12"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource App.SurfaceBrush}"
+                    BorderThickness="2"
+                    BorderBrush="Transparent">
+                <Grid>
+                    <TextBlock x:Name="PART_Icon"
+                               FontSize="36"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <!-- Badges (جديد / محدّث) -->
+                    <Border x:Name="PART_NewBadge"
+                            Background="#2196F3"
+                            CornerRadius="8"
+                            Padding="6,2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="0,-6,-6,0"
+                            Visibility="Collapsed">
+                        <TextBlock Text="جديد"
+                                   FontSize="9"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                    </Border>
+          <!-- Badge History Count -->
+          <Border x:Name="PART_HistoryBadge"
+        Background="#FF5722"
+        CornerRadius="9"
+        MinWidth="18" Height="18"
+        Padding="4,0"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Top"
+        Margin="0,-6,-6,0"
+        Visibility="Collapsed">
+            <TextBlock x:Name="PART_HistoryCount"
+               FontSize="10"
+               FontWeight="Bold"
+               Foreground="White"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               TextAlignment="Center"/>
+          </Border>
+          <Border x:Name="PART_UpdatedBadge"
+                            Background="#4CAF50"
+                            CornerRadius="8"
+                            Padding="6,2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="0,-6,-6,0"
+                            Visibility="Collapsed">
+                        <TextBlock Text="محدّث"
+                                   FontSize="9"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                    </Border>
+
+                    <!-- Pinned / Favorite على الجهة اليسرى -->
+                    <StackPanel HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="-4,-4,0,0"
+                                Orientation="Horizontal">
+                        <TextBlock x:Name="PART_Star"
+                                   Text="⭐"
+                                   FontSize="10"
+                                   Margin="0,0,2,0"
+                                   Visibility="Collapsed"/>
+                        <TextBlock x:Name="PART_Pin"
+                                   Text="📌"
+                                   FontSize="10"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- الاسم -->
+            <TextBlock x:Name="PART_Title"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Margin="0,6,0,0"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+
+            <!-- عدد مرات الاستخدام -->
+            <TextBlock x:Name="PART_UsageCount"
+                       TextAlignment="Center"
+                       FontSize="10"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Visibility="Collapsed"/>
+        </StackPanel>
+
+        <!-- زر القائمة (⋮) -->
+        <Button x:Name="PART_MenuButton"
+                Content="⋮"
+                FontSize="14"
+                Width="20" Height="20"
+                Padding="0"
+                MinWidth="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,-2,-2,0"
+                Background="Transparent"
+                BorderThickness="0"
+                Opacity="0"
+                Click="OnMenuButtonClicked">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                            <Setter Property="Opacity" Value="0.8"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+    </Grid>
+</UserControl>
